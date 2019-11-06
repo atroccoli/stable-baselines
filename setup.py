@@ -1,3 +1,4 @@
+import os
 import sys
 import subprocess
 from setuptools import setup, find_packages
@@ -6,6 +7,8 @@ from distutils.version import LooseVersion
 if sys.version_info.major != 3:
     print('This Python is only compatible with Python 3, but you are running '
           'Python {}. The installation will likely fail.'.format(sys.version_info.major))
+
+is_tf_container = os.environ.get('NVIDIA_TENSORFLOW_VERSION', default=None)
 
 # Check tensorflow installation to avoid
 # breaking pre-installed tf gpu
@@ -28,7 +31,7 @@ except ImportError:
             pass
 
 tf_dependency = []
-if install_tf:
+if not is_tf_container and install_tf:
     tf_dependency = ['tensorflow-gpu>=1.8.0,<2.0.0'] if tf_gpu else ['tensorflow>=1.8.0,<2.0.0']
     if tf_gpu:
         print("A GPU was detected, tensorflow-gpu will be installed")
